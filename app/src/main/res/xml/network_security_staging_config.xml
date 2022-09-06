@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!--ステージング環境-->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">sqex.to</domain>
+        <domain includeSubdomains="true">cloudfront.net</domain>
+        <domain includeSubdomains="false">ddemo-service.ebisumart.com</domain>
+        <domain includeSubdomains="false">alpha.files-com2.member.jp.sqex.tv</domain>
+    </domain-config>
+</network-security-config>

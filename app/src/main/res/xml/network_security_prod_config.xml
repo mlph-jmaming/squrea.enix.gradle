@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!--本番環境-->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">sqex.to</domain>
+        <domain includeSubdomains="true">cloudfront.net</domain>
+    </domain-config>
+</network-security-config>

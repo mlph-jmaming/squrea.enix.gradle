@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "479975247881",
+    "firebase_url": "https://dev-sqexapp.firebaseio.com",
+    "project_id": "dev-sqexapp",
+    "storage_bucket": "dev-sqexapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:479975247881:android:9448ccba83de8f2b31e8d8",
+        "android_client_info": {
+          "package_name": "com.example.myapplication.develop"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "479975247881-66b76m85icfrnqndkamtm126ac33j43d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDIhfumYKFN3Gbu2FpZvIDfl4rXqJ9Qud4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "479975247881-66b76m85icfrnqndkamtm126ac33j43d.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "479975247881-ue7pblau7of0j50rd7ccpmnvgr43npel.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "jp.co.e-xtreme.SQEXPortalApp.Development"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

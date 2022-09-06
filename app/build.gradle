@@ -1,25 +1,204 @@
-plugins {
-    id 'com.android.application'
-    id 'org.jetbrains.kotlin.android'
-}
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+//apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+apply from: rootProject.file('gradle/generated-kotlin-sources.gradle')
+apply plugin: 'com.google.firebase.firebase-perf'
+apply plugin: 'com.google.firebase.crashlytics'
+apply plugin: 'org.jetbrains.kotlin.android'
+apply plugin: 'com.google.gms.google-services'
+
+apply from: "../publish.gradle"
 
 android {
     compileSdk 32
-
     defaultConfig {
-        applicationId "com.example.squreaenixgradle"
+        applicationId "com.example.myapplication"
         minSdk 21
         targetSdk 32
-        versionCode 1
-        versionName "1.0"
-
+        versionCode 2010002
+        versionName "2.1.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+    // ソースディレクトリに"kotlin"も指定
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
 
+        String sharedTestDir = 'src/sharedTest/java'
+        test {
+            java.srcDir sharedTestDir
+        }
+        androidTest {
+            java.srcDir sharedTestDir
+        }
+    }
+    flavorDimensions "default"
+    // 署名
+    signingConfigs {
+        debug {
+            storeFile file('keystore/debug.keystore')
+            storePassword "android"
+            keyAlias "androiddebugkey"
+            keyPassword "android"
+        }
+    }
+    // ビルドタイプ
     buildTypes {
-        release {
+        debug {
+            multiDexEnabled true
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        release {
+            multiDexEnabled true
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+            signingConfig signingConfigs.debug
+
+//            minifyEnabled false
+//            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    // ビルド環境
+    productFlavors {
+        // 本番環境
+        prod {
+            resValue "string", "version_code", "Version ${defaultConfig.versionName}"
+            buildConfigField "String", "APP_CONFIG_URL", '"https://app-api.portalapp.jp.square-enix.com/api/v1/config/appconfig.json"'
+
+            buildConfigField "String", "API_COMMON_KEY", '"sHraue9aM09rfa0L"' // API
+            buildConfigField "String", "AES_ENCRYPT_KEY", '"a8945q43isoriJgb237843Oehaujs409"' // Ticket
+            buildConfigField "boolean", "ALLOW_ALL_CERTIFICATES", "false"
+        }
+        // 検証環境
+        staging {
+            applicationIdSuffix ".staging"
+            versionNameSuffix ".s"
+
+            resValue "string", "version_code", "Version ${defaultConfig.versionName} .staging"
+            buildConfigField "String", "APP_CONFIG_URL", '"https://close-app-api.portalapp.jp.square-enix.com/api/v1/config/appconfig.json"'
+
+            buildConfigField "String", "API_COMMON_KEY", '"sHraue9aM09rfa0L"' // API
+            buildConfigField "String", "AES_ENCRYPT_KEY", '"a8945q43isoriJgb237843Oehaujs409"' // Ticket
+            buildConfigField "boolean", "ALLOW_ALL_CERTIFICATES", "true"
+        }
+        // 開発環境
+        develop {
+            applicationIdSuffix ".develop"
+            versionNameSuffix ".d"
+
+            resValue "string", "version_code", "Version ${defaultConfig.versionName} .develop"
+            buildConfigField "String", "APP_CONFIG_URL", '"https://dev-front-api.portalapp.jp.square-enix.com/api/v1/config/appconfig.json"'
+
+            buildConfigField "String", "API_COMMON_KEY", '"sHraue9aM09rfa0L"' // API
+            buildConfigField "String", "AES_ENCRYPT_KEY", '"sHraue9aM09rfa0L"' // Ticket
+            buildConfigField "boolean", "ALLOW_ALL_CERTIFICATES", "true"
+            signingConfig signingConfigs.debug
+        }
+
+        // QA環境
+        fqa1 {
+            applicationIdSuffix ".develop"
+            versionNameSuffix ".fqa1"
+
+            resValue "string", "version_code", "Version ${defaultConfig.versionName} .fqa1"
+            buildConfigField "String", "APP_CONFIG_URL", '"https://fqa1-app-api.portalapp.jp.square-enix.com/api/v1/config/appconfig.json"'
+
+            buildConfigField "String", "API_COMMON_KEY", '"sHraue9aM09rfa0L"' // API
+            buildConfigField "String", "AES_ENCRYPT_KEY", '"sHraue9aM09rfa0L"' // Ticket
+            buildConfigField "boolean", "ALLOW_ALL_CERTIFICATES", "true"
+            signingConfig signingConfigs.debug
+        }
+        fqa2 {
+            applicationIdSuffix ".develop"
+            versionNameSuffix ".fqa2"
+
+            resValue "string", "version_code", "Version ${defaultConfig.versionName} .fqa2"
+            buildConfigField "String", "APP_CONFIG_URL", '"https://fqa2-app-api.portalapp.jp.square-enix.com/api/v1/config/appconfig.json"'
+
+            buildConfigField "String", "API_COMMON_KEY", '"sHraue9aM09rfa0L"' // API
+            buildConfigField "String", "AES_ENCRYPT_KEY", '"sHraue9aM09rfa0L"' // Ticket
+            buildConfigField "boolean", "ALLOW_ALL_CERTIFICATES", "true"
+            signingConfig signingConfigs.debug
+        }
+        fqa3 {
+            applicationIdSuffix ".develop"
+            versionNameSuffix ".fqa3"
+
+            resValue "string", "version_code", "Version ${defaultConfig.versionName} .fqa3"
+            buildConfigField "String", "APP_CONFIG_URL", '"https://fqa3-app-api.portalapp.jp.square-enix.com/api/v1/config/appconfig.json"'
+
+            buildConfigField "String", "API_COMMON_KEY", '"sHraue9aM09rfa0L"' // API
+            buildConfigField "String", "AES_ENCRYPT_KEY", '"sHraue9aM09rfa0L"' // Ticket
+            buildConfigField "boolean", "ALLOW_ALL_CERTIFICATES", "true"
+            signingConfig signingConfigs.debug
+        }
+        fqa4 {
+            applicationIdSuffix ".develop"
+            versionNameSuffix ".fqa4"
+
+            resValue "string", "version_code", "Version ${defaultConfig.versionName} .fqa4"
+            buildConfigField "String", "APP_CONFIG_URL", '"https://fqa4-app-api.portalapp.jp.square-enix.com/api/v1/config/appconfig.json"'
+
+            buildConfigField "String", "API_COMMON_KEY", '"sHraue9aM09rfa0L"' // API
+            buildConfigField "String", "AES_ENCRYPT_KEY", '"sHraue9aM09rfa0L"' // Ticket
+            buildConfigField "boolean", "ALLOW_ALL_CERTIFICATES", "true"
+            signingConfig signingConfigs.debug
+        }
+        fqa5 {
+            applicationIdSuffix ".develop"
+            versionNameSuffix ".fqa5"
+
+            resValue "string", "version_code", "Version ${defaultConfig.versionName} .fqa5"
+            buildConfigField "String", "APP_CONFIG_URL", '"https://fqa5-app-api.portalapp.jp.square-enix.com/api/v1/config/appconfig.json"'
+
+            buildConfigField "String", "API_COMMON_KEY", '"sHraue9aM09rfa0L"' // API
+            buildConfigField "String", "AES_ENCRYPT_KEY", '"sHraue9aM09rfa0L"' // Ticket
+            buildConfigField "boolean", "ALLOW_ALL_CERTIFICATES", "true"
+
+            signingConfig signingConfigs.debug
+        }
+
+        // 脆弱性診断環境
+        vulnerabilityDiagnosis {
+            applicationIdSuffix ".staging"
+            versionNameSuffix ".v"
+
+            resValue "string", "version_code", "Version ${defaultConfig.versionName}.v"
+            buildConfigField "String", "APP_CONFIG_URL", '"https://sqa-app-api.portalapp.jp.square-enix.com/api/v1/config/appconfig.json"'
+
+            buildConfigField "String", "API_COMMON_KEY", '"sHraue9aM09rfa0L"' // API
+            buildConfigField "String", "AES_ENCRYPT_KEY", '"a8945q43isoriJgb237843Oehaujs409"' // Ticket
+            buildConfigField "boolean", "ALLOW_ALL_CERTIFICATES", "true"
+        }
+
+        // 負荷試験環境
+        stressTest {
+            applicationIdSuffix ".staging"
+            versionNameSuffix ".stress_test"
+
+            resValue "string", "version_code", "Version ${defaultConfig.versionName}.v"
+            buildConfigField "String", "APP_CONFIG_URL", '"https://str-app-api.portalapp.jp.square-enix.com/api/v1/config/appconfig.json"'
+
+            buildConfigField "String", "API_COMMON_KEY", '"sHraue9aM09rfa0L"' // API
+            buildConfigField "String", "AES_ENCRYPT_KEY", '"a8945q43isoriJgb237843Oehaujs409"' // Ticket
+            buildConfigField "boolean", "ALLOW_ALL_CERTIFICATES", "true"
+        }
+
+        // SQEXQA環境
+        sqexqa {
+            applicationIdSuffix ".sqa"
+            versionNameSuffix ".sqa"
+
+            resValue "string", "version_code", "Version ${defaultConfig.versionName}.sqa"
+            buildConfigField "String", "APP_CONFIG_URL", '"https://sqa-app-api.portalapp.jp.square-enix.com/api/v1/config/appconfig.json"'
+
+            buildConfigField "String", "API_COMMON_KEY", '"sHraue9aM09rfa0L"' // API
+            buildConfigField "String", "AES_ENCRYPT_KEY", '"a8945q43isoriJgb237843Oehaujs409"' // Ticket
+            buildConfigField "boolean", "ALLOW_ALL_CERTIFICATES", "true"
         }
     }
     compileOptions {
@@ -29,20 +208,197 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
-    buildFeatures {
-        viewBinding true
+
+    android.applicationVariants.all {
+        sourceSets.forEach { it.java.srcDirs += "build/generated/source/kaptKotlin/${it.name}" }
+    }
+
+    packagingOptions {
+        exclude "**/module-info.class"
     }
 }
 
-dependencies {
+def library_support_version = '1.0.0'
+def library_leak_canary_version = "1.5.1"
+def library_ok_http_version = "3.12.1"
+def library_retrofit_version = "2.5.0"
+def library_anko_version = "0.10.8"
+def library_stetho_version = "1.5.0"
+def library_dbflow_version = "4.2.4"
+def library_arrow_version = "0.8.2"
+def library_hyperion_version = "0.9.27"
 
-    implementation 'androidx.core:core-ktx:1.7.0'
-    implementation 'androidx.appcompat:appcompat:1.5.0'
-    implementation 'com.google.android.material:material:1.6.1'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.10"
+
+//    implementation "androidx.core:core-ktx:${library_support_version}"
+//    implementation "androidx.legacy:legacy-support-v4:${library_support_version}"
+//    implementation "androidx.appcompat:appcompat:${library_support_version}"
+    implementation 'com.google.android.material:material:1.3.0'
+//    implementation "androidx.cardview:cardview:${library_support_version}"
+//    implementation "androidx.gridlayout:gridlayout:${library_support_version}"
+//    implementation "androidx.browser:browser:${library_support_version}"
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+//    implementation "androidx.cardview:cardview:${library_support_version}"
+    implementation 'androidx.multidex:multidex:2.0.1'
+//    implementation "androidx.browser:browser:${library_support_version}"
+//    implementation "androidx.palette:palette:${library_support_version}"
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0-alpha02'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.5.1'
     implementation 'androidx.navigation:navigation-ui-ktx:2.5.1'
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    kapt 'androidx.lifecycle:lifecycle-compiler:2.6.0-alpha01'
+
+    implementation("com.squareup.picasso:picasso:2.71828") {
+        exclude group: 'com.android.support', module: 'exifinterface'
+    }
+    implementation "com.squareup.okhttp3:okhttp:${library_ok_http_version}"
+    implementation "com.squareup.okhttp3:logging-interceptor:${library_ok_http_version}"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:${library_retrofit_version}"
+    implementation "com.squareup.retrofit2:converter-moshi:${library_retrofit_version}"
+    implementation("com.squareup.retrofit2:retrofit:${library_retrofit_version}") {
+        exclude module: 'okhttp'
+    }
+
+    implementation 'com.jakewharton.threetenabp:threetenabp:1.1.1'
+
+    implementation 'org.kodein.di:kodein-di-conf-jvm:6.0.1'
+    implementation 'org.kodein.di:kodein-di-generic-jvm:6.0.1'
+    implementation 'org.kodein.di:kodein-di-framework-android-x:6.0.1'
+
+    implementation "com.squareup.moshi:moshi:1.8.0"
+    implementation 'se.ansman.kotshi:api:1.0.6'
+    kapt 'se.ansman.kotshi:compiler:1.0.6'
+
+    implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
+//    implementation 'com.jakewharton.rxbinding3:rxbinding:3.0.0-alpha2'
+//    implementation 'com.jakewharton.rxbinding3:rxbinding-core:3.0.0-alpha2'
+//    implementation 'com.jakewharton.rxbinding3:rxbinding-appcompat:3.0.0-alpha2'
+//    implementation 'com.jakewharton.rxbinding3:rxbinding-material:3.0.0-alpha2'
+//    implementation 'com.jakewharton.rxbinding3:rxbinding-recyclerview:3.0.0-alpha2'
+//    implementation 'com.jakewharton.rxbinding3:rxbinding-viewpager:3.0.0-alpha2'
+//    implementation 'com.jakewharton.rxbinding3:rxbinding-swiperefreshlayout:3.0.0-alpha2'
+    implementation 'com.github.tbruyelle:rxpermissions:0.10.2'
+    implementation 'io.reactivex.rxjava2:rxkotlin:2.3.0'
+
+    implementation "io.arrow-kt:arrow-core:${library_arrow_version}"
+    implementation "io.arrow-kt:arrow-syntax:${library_arrow_version}"
+    implementation "io.arrow-kt:arrow-typeclasses:${library_arrow_version}"
+    kapt "io.arrow-kt:arrow-annotations-processor:${library_arrow_version}"
+
+    implementation "io.arrow-kt:arrow-free:${library_arrow_version}"
+    implementation "io.arrow-kt:arrow-mtl:${library_arrow_version}"
+    implementation "io.arrow-kt:arrow-effects:${library_arrow_version}"
+    implementation "io.arrow-kt:arrow-effects-instances:${library_arrow_version}"
+    implementation "io.arrow-kt:arrow-effects-rx2:${library_arrow_version}"
+    implementation "io.arrow-kt:arrow-effects-rx2-instances:${library_arrow_version}"
+    implementation "io.arrow-kt:arrow-effects-kotlinx-coroutines:${library_arrow_version}"
+    implementation "io.arrow-kt:arrow-optics:${library_arrow_version}"
+    implementation "io.arrow-kt:arrow-generic:${library_arrow_version}"
+
+    implementation "org.multiverse:multiverse-core:0.7.0"
+
+    implementation "com.yqritc:recyclerview-flexibledivider:1.4.0"
+
+    implementation 'com.github.Yumenokanata:FragmentManager:2.8.2'
+    implementation 'com.github.Yumenokanata.SimpleSharedPref:simplesharedpref:0.6.2'
+    implementation 'com.github.Yumenokanata.SimpleSharedPref:moshi-pref:0.6.2'
+    implementation 'com.github.Yumenokanata.DslAdapter:dsladapter:1.2.1'
+    implementation 'com.github.Yumenokanata.DslAdapter:dsladapter-rx2:1.2.1'
+    implementation 'com.github.Yumenokanata.AvocadoViews:statuslayout:2.1.1'
+    implementation 'com.github.Yumenokanata.AvocadoViews:loadinglayout:15102a4131'
+
+    implementation "org.jetbrains.anko:anko-commons:$library_anko_version"
+    implementation "org.jetbrains.anko:anko-appcompat-v7-coroutines:$library_anko_version"
+
+    implementation "com.github.Raizlabs.DBFlow:dbflow-core:4.2.4"
+    implementation "com.github.Raizlabs.DBFlow:dbflow:4.2.4"
+    implementation "com.github.Raizlabs.DBFlow:dbflow-kotlinextensions:4.2.4@aar"
+    implementation "com.github.Raizlabs.DBFlow:dbflow-rx2:4.2.4"
+    implementation "com.github.Raizlabs.DBFlow:dbflow-rx2-kotlinextensions:4.2.4"
+    kapt "com.github.Raizlabs.DBFlow:dbflow-processor:4.2.4"
+
+
+    debugImplementation "com.facebook.stetho:stetho:${library_stetho_version}"
+    debugImplementation "com.facebook.stetho:stetho-okhttp3:${library_stetho_version}"
+
+    implementation 'io.supercharge:shimmerlayout:2.1.0'
+
+    implementation 'com.jakewharton.timber:timber:4.7.1'
+
+    //animation
+    implementation 'com.airbnb.android:lottie:2.7.0'
+
+    implementation "com.google.zxing:core:3.3.3"
+
+    debugImplementation "com.squareup.retrofit2:retrofit-mock:${library_retrofit_version}"
+
+    // Test
+    testImplementation "junit:junit:4.12"
+    testImplementation "org.robolectric:robolectric:3.8"
+    testImplementation "io.kotlintest:kotlintest:2.0.7"
+    testImplementation "io.arrow-kt:arrow-test:${library_arrow_version}"
+    testImplementation "com.squareup.okhttp3:mockwebserver:${library_ok_http_version}"
+    testImplementation "com.squareup.retrofit2:retrofit-mock:${library_retrofit_version}"
+    testImplementation "net.javacrumbs.json-unit:json-unit-assertj:2.3.0"
+    testImplementation "net.javacrumbs.json-unit:json-unit-fluent:2.3.0"
+    testImplementation "net.javacrumbs.json-unit:json-unit:2.3.0"
+    testImplementation "org.json:json:20160810"
+    testImplementation('org.threeten:threetenbp:1.3.7') {
+        exclude group: 'com.jakewharton.threetenabp', module: 'threetenabp'
+    }
+    testImplementation 'org.jsoup:jsoup:1.11.3'
+
+
+    androidTestImplementation "io.arrow-kt:arrow-test:${library_arrow_version}"
+    androidTestImplementation 'androidx.test:runner:1.1.1'
+    androidTestImplementation 'androidx.test:rules:1.1.1'
+    androidTestImplementation('androidx.test.espresso:espresso-core:3.1.0', {
+//        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    androidTestImplementation('androidx.test.espresso:espresso-contrib:3.1.0') {
+        exclude module: 'support-annotations'
+        exclude module: 'support-v4'
+        exclude module: 'recyclerview-v7'
+    }
+    androidTestImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0", {
+        exclude group: 'org.jetbrains.kotlin'
+    })
+
+    implementation("com.google.firebase:firebase-core:17.2.0")
+    implementation("com.google.firebase:firebase-perf:19.0.5")
+
+    implementation "com.google.android.gms:play-services-iid:17.0.0"
+
+    //FirebaseMessaging
+    implementation("com.google.firebase:firebase-messaging:20.2.4")
+
+    // Hyperion
+    debugImplementation "com.willowtreeapps.hyperion:hyperion-core:${library_hyperion_version}"
+    debugImplementation "com.willowtreeapps.hyperion:hyperion-attr:${library_hyperion_version}"
+    debugImplementation "com.willowtreeapps.hyperion:hyperion-measurement:${library_hyperion_version}"
+    debugImplementation "com.willowtreeapps.hyperion:hyperion-disk:${library_hyperion_version}"
+    debugImplementation "com.willowtreeapps.hyperion:hyperion-recorder:${library_hyperion_version}"
+    debugImplementation "com.willowtreeapps.hyperion:hyperion-phoenix:${library_hyperion_version}"
+    debugImplementation "com.willowtreeapps.hyperion:hyperion-crash:${library_hyperion_version}"
+    debugImplementation "com.willowtreeapps.hyperion:hyperion-shared-preferences:${library_hyperion_version}"
+    debugImplementation "com.willowtreeapps.hyperion:hyperion-timber:${library_hyperion_version}"
+
+    // Firebase CrashLytics
+    implementation 'com.google.firebase:firebase-crashlytics:17.2.1'
+
+    // Firebase Analytics
+    implementation 'com.google.firebase:firebase-analytics:17.5.0'
+
+    implementation 'com.yarolegovich:discrete-scrollview:1.5.1'
+
+    // looping view pager
+    implementation 'com.kenilt.loopingviewpager:loopingviewpager:0.2.0'
+    implementation 'com.kenilt.circleindicator:circleindicator:1.0.1'
+
+    implementation("androidx.recyclerview:recyclerview:1.2.1")
+    // For control over item selection of both touch and mouse driven selection
+    implementation("androidx.recyclerview:recyclerview-selection:1.1.0")
 }
+
+apply plugin: 'com.google.gms.google-services'
